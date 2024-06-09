@@ -76,10 +76,13 @@ const MyDropDown = ({ items, selected, title, getValue }) => {
           {items.map((e) => (
             <MenuItem
               key={e}
+              // className="a"
+              style={{minHeightheight:"40px"}}
               sx={{
                 textAlign: "start",
                 width: "100%",
                 alignSelf: "stretch",
+                
               }}
               value={e}
             >

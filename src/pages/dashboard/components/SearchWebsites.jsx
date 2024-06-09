@@ -78,7 +78,7 @@ const SearchWebsites = () => {
             });
           });
         });
-
+console.log(allKeywords, checkBox,"Daaa")
         dispatch(setKeywordValumePayload([...keywordsArr], checkBox))
         dispatch(setKeywordsData(allKeywords, checkBox));
         dispatch(savePositiveKeywordsData(allKeywords, checkBox))

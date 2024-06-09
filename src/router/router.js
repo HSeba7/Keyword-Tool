@@ -12,14 +12,14 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Navigate to="/dashboard/suggestions" />,
+        element: <Navigate to="/suggestions" />,
       },
       {
-        path: "/dashboard/suggestions",
+        path: "/suggestions",
         element: <DashboardFirstPage />,
       },
       {
-        path: "/dashboard/volume",
+        path: "/volume",
         element: <PageTwo />,
       },
       //   {
@@ -49,3 +49,17 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
+
+
+// {
+//   path: "/",
+//   element: <Navigate to="/dashboard/suggestions" />,
+// },
+// {
+//   path: "/dashboard/suggestions",
+//   element: <DashboardFirstPage />,
+// },
+// {
+//   path: "/dashboard/volume",
+//   element: <PageTwo />,
+// },

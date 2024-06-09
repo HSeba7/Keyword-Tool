@@ -155,6 +155,7 @@ const KeywordsManager = () => {
       label: keyword.label,
     }));
 
+    console.log("negative logs:" , negativeKeywords)
     // Export labels as CSV
     exportDataAsCSV(negativeLabels, "negative_keywords.csv");
   };

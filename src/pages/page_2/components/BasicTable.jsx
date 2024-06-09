@@ -75,28 +75,31 @@ export default function BasicTable() {
     setData(newData);
   };
   const handleExport = () => {
-    console.log('sds');
+    console.log('sds',data);
     // Convert table data to CSV string
     const headers = [
       "Keyword",
       "Volume",
       "Search CPC",
       "Competition",
-      ...data[0]?.result[0]?.monthly_searches,
+      ...data[0]?.result[0]?.monthly_searches.map((item)=>item.month + " "+ item.year),
     ];
 
     const csvRows = [headers.join(",")]; // Add headers first
 
     // Add row data
-    data.forEach((row) => {
+    data[0]?.result?.forEach((row) => {
+      
+    if(row?.monthly_searches && row?.monthly_searches?.length>0){
       const rowData = [
-        row.keyword,
-        row.volume,
-        row.searchCPC,
-        row.competition,
-        ...(row?.monthly_searches?.map(d => d.month + ' ' + d.year)),
+        row?.keyword,
+        row?.search_volume,
+        row?.cpc,
+        row?.competition,
+        ...(row?.monthly_searches?.map(d => d.search_volume)),
       ];
       csvRows.push(rowData.join(","));
+    }
     });
 
     // Create blob and save file
@@ -125,7 +128,13 @@ export default function BasicTable() {
             borderColor: "#F1F3F6",
           }}
         >
-          <Table aria-label="simple table">
+          <Table aria-label="simple table" 
+           style={{
+            height: data[0]?.result?.length > 30 ? 30 * 70 + 'px' : 'auto',  
+            overflowY: data[0]?.result?.length > 30 ? 'scroll' : 'hidden',
+            display: data[0]?.result?.length > 0 ? 'block': "table"
+        }}
+          >
             <TableHead>
               <Box></Box>
               <TableRow
@@ -238,7 +247,7 @@ export default function BasicTable() {
         </TableContainer>{" "}
       </Box>
 
-      <Box paddingBottom={10}>
+      <Box paddingBottom={10} >
         {" "}
         <Button
           variant="contained"
@@ -256,7 +265,7 @@ export default function BasicTable() {
         >
           EXPORT
         </Button>
-        <Button
+        {/* <Button
           variant="contained"
           sx={{
             bgcolor: "#0D4BC1",
@@ -268,7 +277,7 @@ export default function BasicTable() {
           }}
         >
           SAVE LIST
-        </Button>
+        </Button> */}
       </Box>
     </Box>
   );
