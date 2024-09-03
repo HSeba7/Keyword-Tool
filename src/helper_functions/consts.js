@@ -1,0 +1,1 @@
+export const WORDS_LIMIT = 4000;
