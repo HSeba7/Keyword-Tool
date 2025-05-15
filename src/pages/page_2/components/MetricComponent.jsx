@@ -7,15 +7,17 @@ import Swal from 'sweetalert2';
 import { isValumeDataSubmit, setOtherInfoValumePayload,setValumeData } from '../../../actions/actions';
 import { fetchUserData } from '../../../utils/auth';
 import {WORDS_LIMIT} from "../../../helper_functions/consts"
-import {fetchKeywordSuggestions} from "../../../helper_functions/axios"
+import {fetchKeywordSuggestions, fetchKeywordData} from "../../../helper_functions/axios";
 
 export default function MetricComponent() {
   const dispatch = useDispatch();
   const [searchData, setSearchData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [allloc, allLocation] = useState([]);
   const keywords = useSelector((state) => state?.valumeReducerData?.keywordValumeData) || [];
   const valumeOtherData = useSelector((state) => state?.valumeReducerData?.valumeOtherData);
+  const [defloc, defaultLocations] = useState(['English', 'German', 'Polish', 'Dutch', 'French', 'Spanish', 'Italian']);
 
   const getData = (data) => {
     setSearchData({ ...searchData, ...data });
@@ -50,6 +52,18 @@ export default function MetricComponent() {
     return res;
   }
 
+  const fetchLanguage = async () => {
+    try {
+      const langData = await fetchKeywordData('/v3/keywords_data/google_ads/languages', {});
+      const rseultdata = langData[0].result.length > 0 ? langData[0].result : [];
+      const languageNames = rseultdata.map(lang => lang.language_name);
+      const filteredLanguages = languageNames.filter(loc => defloc.includes(loc));
+      allLocation(filteredLanguages);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -60,6 +74,8 @@ export default function MetricComponent() {
         console.error('Error fetching user data:', error);
       }
     };
+
+    fetchLanguage();
     fetchUser();
   }, [dispatch]);
 
@@ -160,7 +176,7 @@ export default function MetricComponent() {
           }}>
           <MyDropDown
             title={'Metric languages'}
-            items={['English']}
+            items={allloc}
             selected={'English'}
             getValue={(e) => getData({ language_name: e })}></MyDropDown>
 

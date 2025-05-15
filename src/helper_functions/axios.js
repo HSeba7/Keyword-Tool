@@ -24,3 +24,15 @@ export const fetchKeywordSuggestions = async (url,postArray) => {
   }
 };
 
+export const fetchKeywordData = async (url, queryParams = {}) => {
+  try {
+    const response = await axiosInstance.get(url, {
+      params: queryParams
+    });
+    console.log("API Response:", response);
+    return response?.data?.tasks; // Adjust this based on your actual API structure
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};

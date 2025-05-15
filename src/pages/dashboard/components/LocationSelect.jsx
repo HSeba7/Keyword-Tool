@@ -1,16 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import { TextField, MenuItem, InputAdornment } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Box } from "@mui/system";
 import LocationIcon from "../../../checkbox_icons/location_icon.png";
+import { fetchKeywordData } from '../../../helper_functions/axios';
 
 const LocationSelect = ({ onLocationChange }) => {
-  const [location, setLocation] = useState("United Kingdom");
+  const [location, setLocation] = useState("English");
+  const [allloc, allLocation] = useState([]);
+  const [defloc, defaultLocations] = useState(['English', 'German', 'Polish', 'Dutch', 'French', 'Spanish', 'Italian']);
 
-  const handleChange = (event) => {
+
+  const handleChange = async (event) => {
     setLocation(event.target.value);
-    onLocationChange(event.target.value);
+    
+    const selectedValue = event.target.value;
+    const selectedLanguageObj = allloc.find(loc => loc.language_name === selectedValue);
+    if (selectedLanguageObj) {
+      const locData = await fetchKeywordData('/v3/keywords_data/google_ads/locations/'+selectedLanguageObj.language_code, {});
+      const firstlocData = locData[0].result.length > 0 ? locData[0].result[0] : [];
+      if(firstlocData) {
+        onLocationChange({
+          location: firstlocData.location_name,
+          language: selectedLanguageObj.language_name,
+        });
+      }
+      
+    }
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const langData = await fetchKeywordData('/v3/keywords_data/google_ads/languages', {});
+        const rseultdata = langData[0].result.length > 0 ? langData[0].result : [];
+        const filteredLanguages = rseultdata.filter(loc => defloc.includes(loc.language_name));
+        allLocation(filteredLanguages);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    fetchUser();
+  },[]);
+
+  
 
   return (
     <Box
@@ -66,8 +99,13 @@ const LocationSelect = ({ onLocationChange }) => {
         </MenuItem> */}
         {/* Selectable items */}
         {/* <MenuItem value="United States">USA</MenuItem> */}
-        <MenuItem value="United Kingdom">England</MenuItem>
+        {/* <MenuItem value="United Kingdom">England</MenuItem> */}
         {/* Add more countries as needed */}
+        {allloc.map(location => (
+          <MenuItem key={location.language_code} value={location.language_name}>
+            {location.language_name}
+          </MenuItem>
+        ))}
       </TextField>
     </Box>
   );

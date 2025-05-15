@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useRef } from "react";
 import BlueButtonsRow from "./BlueButtonsRow";
 import KeywordsTable from "./KeywordsTable";
 import { saveAs } from "file-saver";
@@ -14,6 +14,7 @@ const KeywordsManager = ({allowedToSend}) => {
 	const { keyword, setKeyword, category } = useKeywordContext();
   const initialPositiveKeywords = useSelector((state) => state.positiveKeyWordsReducer);
   const initialNegativeKeywords = useSelector((state) => state.negativeKeyWordsReducer);
+  const timeoutRef = useRef(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -84,30 +85,35 @@ const KeywordsManager = ({allowedToSend}) => {
   };
 
   const moveKeyword = (sourceSetKeywords, targetSetKeywords, name) => {
-    recordAction(); // Record state before making changes
-
-    // Find keyword in either list
-    const keywordToMove = positiveKeywords
-      .concat(negativeKeywords)
-      .find((kw) => kw.label === name);
-    if (!keywordToMove) return;
-
-    // Update both lists
-    setPositiveKeywords((prev) => prev.filter((kw) => kw.label !== name));
-    setNegativeKeywords((prev) => prev.filter((kw) => kw.label !== name));
-
-    // Add the keyword to the target list
-    if (sourceSetKeywords === setPositiveKeywords) {
-      setNegativeKeywords((prev) => [
-        ...prev,
-        { ...keywordToMove, isChecked: false },
-      ]);
-    } else {
-      setPositiveKeywords((prev) => [
-        ...prev,
-        { ...keywordToMove, isChecked: false },
-      ]);
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
     }
+    timeoutRef.current = setTimeout(() => {
+      recordAction(); // Record state before making changes
+      // Find keyword in either list
+      const keywordToMove = positiveKeywords
+        .concat(negativeKeywords)
+        .find((kw) => kw.label === name);
+      if (!keywordToMove) return;
+
+      // Update both lists
+      setPositiveKeywords((prev) => prev.filter((kw) => kw.label !== name));
+      setNegativeKeywords((prev) => prev.filter((kw) => kw.label !== name));
+
+      // Add the keyword to the target list
+      if (sourceSetKeywords === setPositiveKeywords) {
+        setNegativeKeywords((prev) => [
+          ...prev,
+          { ...keywordToMove, isChecked: false },
+          
+        ]);
+      } else {
+        setPositiveKeywords((prev) => [
+          ...prev,
+          { ...keywordToMove, isChecked: false },
+        ]);
+      }
+    }, 500);
   };
 
   const undoLastAction = () => {

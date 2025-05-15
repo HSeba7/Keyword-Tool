@@ -25,6 +25,7 @@ const SearchWebsites = ({ setAllowedToSend }) => {
   const [selectedService, setSelectedService] = useState('GOOGLE');
   const [keywords, setKeywords] = useState('');
   const [location, setLocation] = useState('');
+  const [language, setLanguage] = useState('');
   const [checkBox, setChecked] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
@@ -62,7 +63,8 @@ const SearchWebsites = ({ setAllowedToSend }) => {
   };
 
   const handleLocationChange = (event) => {
-    setLocation(event);
+    setLocation(event.location);
+    setLanguage(event.language);
   };
 
   const searchResult = async () => {
@@ -105,7 +107,7 @@ const SearchWebsites = ({ setAllowedToSend }) => {
           const post_array = [
             {
               keyword: keywords, // Use actual keyword input
-              language_name: 'English',
+              language_name: language || 'English',
               location_name: location || 'United Kingdom', // Use actual location input
               include_serp_info: false,
               limit: 1000,
